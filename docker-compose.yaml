@@ -1,0 +1,25 @@
+#
+#services:
+#  postgres:
+#    container_name: postgres-ebook-store
+#    image: postgres
+#    environment:
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: postgres
+#      PGDATA: /var/lib/postgresql/data
+#      POSTGRES_DB: ebook_store
+#    volumes:
+#      - postgres:/data/postgres
+#    ports:
+#      - 5433:5432
+#    networks:
+#      - ebook-store-network
+#    restart: unless-stopped
+#
+#networks:
+#  ebook-store-network:
+#    driver: bridge
+#
+#volumes:
+#  postgres:
+#    driver: local
