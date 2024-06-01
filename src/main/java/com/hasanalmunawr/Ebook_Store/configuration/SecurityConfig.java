@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,9 +36,17 @@ public class SecurityConfig {
     private final LogoutHandler logoutHandler;
 //    private final LogoutHandler logoutHandler;
 
-    private static final String[] PUBLIC_URLS = {
-            "/api/v1/auth/**"
-    };
+    private static final String[] WHITE_LIST_URL = {"/api/v1/auth/**",
+            "/v2/api-docs",
+            "/v3/api-docs",
+            "/v3/api-docs/**",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui/**",
+            "/webjars/**",
+            "/swagger-ui.html"};
 
     private static final String[] SECURITY_URLS = {
             "/api/v1/auth/**",
@@ -50,7 +59,7 @@ public class SecurityConfig {
                 .securityMatcher(new AntPathRequestMatcher("/api/v1/**"))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> {
-                    req.requestMatchers("/api/v1/auth/**").permitAll()
+                    req.requestMatchers(WHITE_LIST_URL).permitAll()
                             .requestMatchers("/api/v1/admin/**").hasRole(ADMIN.name())
                             .requestMatchers(POST, "/api/v1/admin/**").hasAuthority(ADMIN_CREATE.getPermission())
                             .requestMatchers(GET, "/api/v1/admin/**").hasAuthority(ADMIN_READ.getPermission())

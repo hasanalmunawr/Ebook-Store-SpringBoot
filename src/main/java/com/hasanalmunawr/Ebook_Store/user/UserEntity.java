@@ -1,6 +1,7 @@
 package com.hasanalmunawr.Ebook_Store.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.hasanalmunawr.Ebook_Store.book.EbookEntity;
 import com.hasanalmunawr.Ebook_Store.code.CodeEntity;
 import com.hasanalmunawr.Ebook_Store.token.TokenEntity;
 import jakarta.persistence.*;
@@ -47,6 +48,9 @@ public class UserEntity extends Auditable implements UserDetails {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<CodeEntity> codes;
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<EbookEntity> ebooks;
 
 
     @Override
