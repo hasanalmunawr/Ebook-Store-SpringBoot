@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -18,7 +19,7 @@ import java.time.LocalDate;
 @Builder
 @Entity
 @Table(name = "ebooks")
-public class EbookEntity extends Auditable {
+public class EbookEntity extends Auditable implements Serializable {
 
 
     @Column(nullable = false)
@@ -42,7 +43,7 @@ public class EbookEntity extends Auditable {
     private String description;
 
     @Column(nullable = false)
-    private BigDecimal price;
+    private double price;
 
     @Lob
     private byte[] ebookFile;

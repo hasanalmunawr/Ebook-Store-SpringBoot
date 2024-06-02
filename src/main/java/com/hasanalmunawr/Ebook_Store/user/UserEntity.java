@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hasanalmunawr.Ebook_Store.book.EbookEntity;
 import com.hasanalmunawr.Ebook_Store.code.CodeEntity;
 import com.hasanalmunawr.Ebook_Store.token.TokenEntity;
+import com.hasanalmunawr.Ebook_Store.wishlist.WishListEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,6 +42,9 @@ public class UserEntity extends Auditable implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @OneToOne(mappedBy = "user")
+    private WishListEntity wishList;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonIgnore

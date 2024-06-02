@@ -4,5 +4,7 @@ import java.io.File;
 
 public interface FileService {
 
-    void saveFile(byte[] ebookFile);
+    void saveEbookFile(byte[] ebookFile, String isbn);
+
+    void saveEbookCover(byte[] ebookCover, String isbn);
 }
