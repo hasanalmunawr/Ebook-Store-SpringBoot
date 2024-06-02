@@ -1,10 +1,13 @@
 package com.hasanalmunawr.Ebook_Store.controller;
 
 
+import com.hasanalmunawr.Ebook_Store.dto.response.SearchResponse;
 import com.hasanalmunawr.Ebook_Store.service.CustomerService;
 import com.hasanalmunawr.Ebook_Store.service.EbookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,26 +22,42 @@ public class CustomerController {
     private final EbookService ebookService;
     private final CustomerService customerService;
 
-    public ResponseEntity<?> FilterEbookByPriceRange(
+    @GetMapping(path = "/filterByPrice")
+    public ResponseEntity<List<SearchResponse>> FilterEbookByPriceRange(
             @RequestParam("min") double min,
-            @RequestParam("max") double max
+            @RequestParam("max") double max,
+            Authentication currentUser
     ) {
         return ResponseEntity.ok(customerService.FilterEbookByPriceRange(min, max));
     }
 
-    public ResponseEntity<List<Eb>> FilterEbookByPriceCheaper() {
-
+    @GetMapping(path = "/filterByTitle")
+    public ResponseEntity<List<SearchResponse>> FilterEbookByTitle(
+            @RequestParam("title") String title,
+            Authentication currentUser
+    ) {
+        return ResponseEntity.ok(customerService.FilterEbookByTitle(title));
     }
 
-    public void FilterEbookByPriceExpensive() {
-
+    @GetMapping(path = "/filterByAuthor")
+    public ResponseEntity<List<SearchResponse>> FilterEbookByAuthor(
+            @RequestParam("author") String author,
+            Authentication currentUser
+    ) {
+        return ResponseEntity.ok(customerService.FilterEbookByAuthor(author));
     }
 
-    public void FilterEbookByTitle() {
-
+    @GetMapping(path = "/filterByPriceAsc")
+    public ResponseEntity<List<SearchResponse>> FilterEbookByPriceCheaper(
+            Authentication currentUser
+    ) {
+        return ResponseEntity.ok(customerService.FilterEbookByPriceCheaper());
     }
 
-    public void FilterEbookByAuthor() {
-
+    @GetMapping(path = "/filterByPriceDsc")
+    public ResponseEntity<List<SearchResponse>> FilterEbookByPriceExpensive(
+            Authentication currentUser
+    ) {
+        return ResponseEntity.ok(customerService.FilterEbookByPriceExpensive());
     }
 }
