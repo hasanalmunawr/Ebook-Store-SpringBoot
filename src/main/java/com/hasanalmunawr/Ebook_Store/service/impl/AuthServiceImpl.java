@@ -85,6 +85,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponse login(LoginRequest request) {
+        log.info("Login request: {}", request.email());
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(

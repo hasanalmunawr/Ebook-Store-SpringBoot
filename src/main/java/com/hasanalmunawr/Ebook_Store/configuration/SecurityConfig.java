@@ -7,9 +7,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -28,15 +30,17 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @Configuration
 @EnableWebMvc
 @RequiredArgsConstructor
-public class SecurityConfig {
+public class SecurityConfig{
 
     private final UserRepository userRepository;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationManager authenticationManager;
+    private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
-//    private final LogoutHandler logoutHandler;
 
-    private static final String[] WHITE_LIST_URL = {"/api/v1/auth/**",
+    private static final String[] WHITE_LIST_URL = {
+            "/api/v1/auth/**",
+            "/api/v1/auth/activate-account",
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",
@@ -46,17 +50,20 @@ public class SecurityConfig {
             "/configuration/security",
             "/swagger-ui/**",
             "/webjars/**",
-            "/swagger-ui.html"};
+            "/swagger-ui.html"
+    };
 
     private static final String[] SECURITY_URLS = {
             "/api/v1/auth/**",
             "/api/v1/admin/**",
     };
 
+
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .securityMatcher(new AntPathRequestMatcher("/api/v1/**"))
+                .securityMatcher(new AntPathRequestMatcher("/api/v1/auth/**"))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> {
                     req.requestMatchers(WHITE_LIST_URL).permitAll()
@@ -67,6 +74,7 @@ public class SecurityConfig {
                             .requestMatchers(DELETE, "/api/v1/admin/**").hasAuthority(ADMIN_DELETE.getPermission())
                             .anyRequest().authenticated();
                 })
+                .authenticationProvider(authenticationProvider)
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationManager(authenticationManager)
                 .httpBasic(withDefaults())
@@ -82,4 +90,5 @@ public class SecurityConfig {
                 )
                 .build();
     }
+
 }

@@ -6,10 +6,7 @@ import com.hasanalmunawr.Ebook_Store.code.CodeEntity;
 import com.hasanalmunawr.Ebook_Store.token.TokenEntity;
 import com.hasanalmunawr.Ebook_Store.wishlist.WishListEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -22,6 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Entity
+@ToString
 @Table(name = "users")
 public class UserEntity extends Auditable implements UserDetails {
 

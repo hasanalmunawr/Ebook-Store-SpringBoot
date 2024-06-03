@@ -41,7 +41,7 @@ public interface EbookRepository extends JpaRepository<EbookEntity, Integer> {
 
     @Query("""
             select b From EbookEntity as b
-            Where b.author LIKE %:author%
+            Where b.author.firstName || b.author.lastName LIKE %:name%
             """)
-    List<EbookEntity> filterEbookByAuthor(@Param("author") String author);
+    List<EbookEntity> filterEbookByAuthor(@Param("name") String name);
 }

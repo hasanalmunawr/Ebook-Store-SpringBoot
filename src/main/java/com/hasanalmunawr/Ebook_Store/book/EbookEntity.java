@@ -1,8 +1,10 @@
 package com.hasanalmunawr.Ebook_Store.book;
 
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.hasanalmunawr.Ebook_Store.user.Auditable;
 import com.hasanalmunawr.Ebook_Store.user.UserEntity;
+import com.hasanalmunawr.Ebook_Store.wishlist.WishListEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +12,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
@@ -46,23 +47,22 @@ public class EbookEntity extends Auditable implements Serializable {
     private double price;
 
     @Lob
-    private byte[] ebookFile;
-
-    private String language;
-
-//    private PDFDoc
-    @Column(name = "number_of_pages")
-    private int numberOfPages;
-
-//    private String format;
-
     @Column(name = "cover_ebook")
     private byte[] coverEbook;
 
+    @Lob
+    private byte[] ebookFile;
+
+    @Column(name = "number_of_pages")
+    private int numberOfPages;
+
+    private String language;
+
     private double rating;
 
-//    @Column(name = "file_url")
-//    private String fileUrl;
-
     private boolean availability;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "wish_list_id", referencedColumnName = "id")
+    private WishListEntity wishList;
 }

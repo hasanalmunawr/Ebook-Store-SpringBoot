@@ -49,4 +49,10 @@ public class AuthController {
     )  {
         authService.activateAccount(request.code());
     }
+
+
+    @GetMapping(path = "/get-message")
+    public ResponseEntity<?> post() {
+        return ResponseEntity.ok("Hello From GEt");
+    }
 }

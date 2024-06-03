@@ -7,19 +7,15 @@ import com.hasanalmunawr.Ebook_Store.service.EbookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/ebook")
+@RequestMapping("/api/v1/ebook")
 @RequiredArgsConstructor
 public class CustomerController {
 
-    private final EbookService ebookService;
     private final CustomerService customerService;
 
     @GetMapping(path = "/filterByPrice")
@@ -59,5 +55,11 @@ public class CustomerController {
             Authentication currentUser
     ) {
         return ResponseEntity.ok(customerService.FilterEbookByPriceExpensive());
+    }
+
+
+    @GetMapping(path = "/get-message")
+    public ResponseEntity<?> post() {
+        return ResponseEntity.ok("Hello From GEt");
     }
 }

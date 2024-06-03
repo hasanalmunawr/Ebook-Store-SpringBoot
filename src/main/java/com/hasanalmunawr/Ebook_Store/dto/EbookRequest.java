@@ -21,10 +21,6 @@ public class EbookRequest {
 
     @NonNull
     @NotBlank
-    private String author;
-
-    @NonNull
-    @NotBlank
     private String isbn;
 
     private String publisher;
@@ -34,7 +30,7 @@ public class EbookRequest {
     @Size(max = 2000)
     private String description;
 
-    private BigDecimal price;
+    private double price;
 
     private String language;
 
