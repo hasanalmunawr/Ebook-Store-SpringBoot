@@ -4,12 +4,9 @@ import com.hasanalmunawr.Ebook_Store.security.AdminSecurity;
 import com.hasanalmunawr.Ebook_Store.service.AdminService;
 import com.hasanalmunawr.Ebook_Store.user.UserEntity;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,14 +14,11 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/admin")
-//@PreAuthorize("hasRole('ADMIN')")
 @RequiredArgsConstructor
 public class AdminController {
 
 
     private final AdminService adminService;
-    /*
-     * fitur to see profile of admin == principal*/
 
     @GetMapping(
             path = "/profile",

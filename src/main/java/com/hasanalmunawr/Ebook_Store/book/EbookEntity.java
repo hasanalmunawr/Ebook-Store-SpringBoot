@@ -1,7 +1,6 @@
 package com.hasanalmunawr.Ebook_Store.book;
 
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import com.hasanalmunawr.Ebook_Store.user.Auditable;
 import com.hasanalmunawr.Ebook_Store.user.UserEntity;
 import com.hasanalmunawr.Ebook_Store.wishlist.WishListEntity;
@@ -46,12 +45,11 @@ public class EbookEntity extends Auditable implements Serializable {
     @Column(nullable = false)
     private double price;
 
-    @Lob
     @Column(name = "cover_ebook")
-    private byte[] coverEbook;
+    private String coverEbook;
 
-    @Lob
-    private byte[] ebookFile;
+    @Column(name = "ebook_file")
+    private String ebookFile;
 
     @Column(name = "number_of_pages")
     private int numberOfPages;

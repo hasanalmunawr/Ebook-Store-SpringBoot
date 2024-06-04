@@ -19,7 +19,6 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Entity
-@ToString
 @Table(name = "users")
 public class UserEntity extends Auditable implements UserDetails {
 

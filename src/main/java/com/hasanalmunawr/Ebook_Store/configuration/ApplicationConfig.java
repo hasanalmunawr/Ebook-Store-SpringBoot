@@ -2,6 +2,7 @@ package com.hasanalmunawr.Ebook_Store.configuration;
 
 import com.hasanalmunawr.Ebook_Store.exception.UserAlreadyExistException;
 import com.hasanalmunawr.Ebook_Store.user.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

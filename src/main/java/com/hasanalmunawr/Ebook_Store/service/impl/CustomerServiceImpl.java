@@ -79,8 +79,6 @@ public class CustomerServiceImpl implements CustomerService {
                     searchResponse.setNumberOfPages(ebook.getNumberOfPages());
                     searchResponse.setRating(ebook.getRating());
                     searchResponse.setRating(ebook.getRating());
-                    searchResponse.setCoverEbook(ebook.getCoverEbook());
-                    searchResponse.setEbookFile(ebook.getEbookFile());
                     searchResponse.setAvailability(ebook.isAvailability());
                     return searchResponse;
                 }).collect(Collectors.toList());

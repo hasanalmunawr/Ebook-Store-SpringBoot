@@ -9,6 +9,7 @@ import com.hasanalmunawr.Ebook_Store.user.UserEntity;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -35,78 +36,89 @@ public class EbookController {
       validateAdminAccess(currentAdmin);
         ebookService.saveEbookInformation(request, currentAdmin);
     }
-
-    @PostMapping(path = "/uploadCover")
-    public ResponseEntity<?> uploadCover(
-            @RequestParam("file") MultipartFile file,
-            @RequestParam("isbn") String isbn,
-            @AuthenticationPrincipal UserEntity admin
-    ) throws IOException {
-        validateAdminAccess(admin);
-        if (!file.isEmpty()) {
-            throw new IOException();
+    
+    @GetMapping("/getInfo/{isbn}")
+    public ResponseEntity<?> getEbookInformation(
+            @PathVariable String isbn,
+            @AuthenticationPrincipal UserEntity user) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You are not logged in");
         }
-
-        fileService.saveEbookCover(file.getBytes(), isbn);
-        return ResponseEntity.accepted().build();
+       return ResponseEntity.ok(ebookService.getEbookInformation(isbn));
     }
+    
 
-    @PostMapping("/uploadFile")
-    public ResponseEntity<?> handleFileUpload(
-            @RequestParam("file") MultipartFile file,
-            @RequestParam("isbn") String isbn,
-            @AuthenticationPrincipal UserEntity admin
-    ) throws IOException {
-        validateAdminAccess(admin);
-        if (file.isEmpty()) {
-            throw new IOException();
-        }
+//    @PostMapping(path = "/uploadCover")
+//    public ResponseEntity<?> uploadCover(
+//            @RequestParam("file") MultipartFile file,
+//            @RequestParam("isbn") String isbn,
+//            @AuthenticationPrincipal UserEntity admin
+//    ) throws IOException {
+//        validateAdminAccess(admin);
+//        if (!file.isEmpty()) {
+//            throw new IOException();
+//        }
+//
+////        fileService.saveEbookCover(file.getBytes(), isbn);
+//        return ResponseEntity.accepted().build();
+//    }
+//
+//    @PostMapping("/uploadFile")
+//    public ResponseEntity<?> handleFileUpload(
+//            @RequestParam("file") MultipartFile file,
+//            @RequestParam("isbn") String isbn,
+//            @AuthenticationPrincipal UserEntity admin
+//    ) throws IOException {
+//        validateAdminAccess(admin);
+//        if (file.isEmpty()) {
+//            throw new IOException();
+//        }
+//
+////        fileService.saveEbookFile(file.getBytes(), isbn);
+//        return ResponseEntity.accepted().build();
+//    }
 
-        fileService.saveEbookFile(file.getBytes(), isbn);
-        return ResponseEntity.accepted().build();
-    }
-
-    @GetMapping(path = "/download")
-    public ResponseEntity<?> downloadFile(
-            @RequestParam("isbn") String isbn,
-            @AuthenticationPrincipal UserEntity admin) {
-        validateAdminAccess(admin);
-
-        byte[] downloadFile;
+//    @GetMapping(path = "/download")
+//    public ResponseEntity<?> downloadFile(
+//            @RequestParam("isbn") String isbn,
+//            @AuthenticationPrincipal UserEntity admin) {
+//        validateAdminAccess(admin);
+//
+//        byte[] downloadFile;
+////        try {
+////            downloadFile = fileService.downloadFile(isbn);
+////        } catch (Exception e) {
+////            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+////                    .body("Error downloading file: " + e.getMessage());
+////        }
+//
+//        var ebookEntity = ebookRepository.findByIsbn(isbn)
+//                .orElseThrow(() -> new EntityNotFoundException("Ebook Not found"));
+//
+//        downloadFile = ebookEntity.getEbookFile();
+//        return ResponseEntity.ok()
+//                .contentType(MediaType.APPLICATION_PDF)
+//                .body(downloadFile);
+//    }
+//
+//     @GetMapping(path = "/seeCover")
+//    public ResponseEntity<?> seeCover(
+//            @RequestParam("isbn") String isbn,
+//            @AuthenticationPrincipal UserEntity admin) {
+//        validateAdminAccess(admin);
+//
+//        byte[] downloadFile;
 //        try {
-//            downloadFile = fileService.downloadFile(isbn);
+//            downloadFile = fileService.seeCover(isbn);
 //        } catch (Exception e) {
 //            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 //                    .body("Error downloading file: " + e.getMessage());
 //        }
-
-        var ebookEntity = ebookRepository.findByIsbn(isbn)
-                .orElseThrow(() -> new EntityNotFoundException("Ebook Not found"));
-
-        downloadFile = ebookEntity.getEbookFile();
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(downloadFile);
-    }
-
-     @GetMapping(path = "/seeCover")
-    public ResponseEntity<?> seeCover(
-            @RequestParam("isbn") String isbn,
-            @AuthenticationPrincipal UserEntity admin) {
-        validateAdminAccess(admin);
-
-        byte[] downloadFile;
-        try {
-            downloadFile = fileService.seeCover(isbn);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error downloading file: " + e.getMessage());
-        }
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(downloadFile);
-    }
+//
+//        return ResponseEntity.ok()
+//                .contentType(MediaType.APPLICATION_PDF)
+//                .body(downloadFile);
+//    }
 
 
 
