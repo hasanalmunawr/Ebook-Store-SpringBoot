@@ -1,9 +1,7 @@
 package com.hasanalmunawr.Ebook_Store.service.impl;
 
-import com.hasanalmunawr.Ebook_Store.book.EbookEntity;
 import com.hasanalmunawr.Ebook_Store.book.EbookRepository;
 import com.hasanalmunawr.Ebook_Store.service.FileService;
-import com.hasanalmunawr.Ebook_Store.utils.FileUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -15,9 +13,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
 
-import static com.hasanalmunawr.Ebook_Store.utils.FileUtils.compressFile;
-import static com.hasanalmunawr.Ebook_Store.utils.FileUtils.decompressFile;
-
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -26,7 +21,7 @@ public class FileServiceImpl implements FileService {
     private final EbookRepository ebookRepository;
 
     @Override
-    public void saveEbookFile(MultipartFile file, String fileName, String isbn) {
+    public void saveEbookFile(MultipartFile file, String isbn) {
         var ebookEntity = ebookRepository.findByIsbn(isbn)
                 .orElseThrow(() -> new EntityNotFoundException("Ebook Not found"));
 
@@ -41,41 +36,26 @@ public class FileServiceImpl implements FileService {
 
     }
 
-//    @Override
-//    public void saveCoverFile(byte[] data, String coverName, String isbn) {
-//        var ebookEntity = ebookRepository.findByIsbn(isbn)
-//                .orElseThrow(() -> new EntityNotFoundException("Ebook Not found"));
-//
-//        String randomName = UUID.randomUUID().toString();
-//        Path pathSave = Path.of("src/main/resources/images");
-//        try (OutputStream outputStream = new FileOutputStream(pathSave + "\\" + randomName)) {
-//            outputStream.write(data);
-//
-//            ebookEntity.setCoverEbook(outputStream.toString());
-//        } catch (IOException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
- @Override
-    public void saveCoverFile(MultipartFile file, String coverName, String isbn) {
-     var ebookEntity = ebookRepository.findByIsbn(isbn)
-             .orElseThrow(() -> new EntityNotFoundException("Ebook Not found"));
+    @Override
+    public void saveCoverFile(MultipartFile file, String isbn) {
+        var ebookEntity = ebookRepository.findByIsbn(isbn)
+                .orElseThrow(() -> new EntityNotFoundException("Ebook Not found"));
 
-     String randomName = UUID.randomUUID().toString();
-     Path pathSave = Path.of("src/main/resources/images/" + randomName);
+        String randomName = UUID.randomUUID().toString();
+        Path pathSave = Path.of("src/main/resources/images/" + randomName);
 
-     try {
+        try {
 //         // Ensure the directory exists
-         Files.createDirectories(pathSave.getParent());
+            Files.createDirectories(pathSave.getParent());
 
-         // Save the file
-         file.transferTo(pathSave.toFile());
+            // Save the file (FOUND ERROR AT HERE
+            file.transferTo(pathSave);
 
-         // Update the entity with the path
-         ebookEntity.setCoverEbook(pathSave.toString());
-     } catch (IOException e) {
-         throw new RuntimeException(e);
-     }
+            // Update the entity with the path
+            ebookEntity.setCoverEbook(pathSave.toString());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
@@ -94,22 +74,6 @@ public class FileServiceImpl implements FileService {
             throw new RuntimeException(e);
         }
     }
-
-//     @Override
-//    public byte[] getCoverFile(String isbn) {
-//        var ebookEntity = ebookRepository.findByIsbn(isbn)
-//                .orElseThrow(() -> new EntityNotFoundException("Ebook Not found"));
-//        try {
-//            InputStream inputStream = new FileInputStream(ebookEntity.getCoverEbook());
-//            byte[] bytes = inputStream.readAllBytes();
-//            inputStream.close();
-//            return bytes;
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//
-//
 
     @Override
     public byte[] getEbookFile(String isbn) {
@@ -159,4 +123,36 @@ public class FileServiceImpl implements FileService {
 //
 //        return decompressFile(ebookEntity.getEbookFile());
 //    }
+
+
+    //    @Override
+//    public void saveCoverFile(byte[] data, String coverName, String isbn) {
+//        var ebookEntity = ebookRepository.findByIsbn(isbn)
+//                .orElseThrow(() -> new EntityNotFoundException("Ebook Not found"));
+//
+//        String randomName = UUID.randomUUID().toString();
+//        Path pathSave = Path.of("src/main/resources/images");
+//        try (OutputStream outputStream = new FileOutputStream(pathSave + "\\" + randomName)) {
+//            outputStream.write(data);
+//
+//            ebookEntity.setCoverEbook(outputStream.toString());
+//        } catch (IOException exception) {
+//            exception.printStackTrace();
+//        }
+//    }
+
+//    @Override
+//    public byte[] getCoverFile(String isbn) {
+//        var ebookEntity = ebookRepository.findByIsbn(isbn)
+//                .orElseThrow(() -> new EntityNotFoundException("Ebook Not found"));
+//        try {
+//            InputStream inputStream = new FileInputStream(ebookEntity.getCoverEbook());
+//            byte[] bytes = inputStream.readAllBytes();
+//            inputStream.close();
+//            return bytes;
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+//
 }

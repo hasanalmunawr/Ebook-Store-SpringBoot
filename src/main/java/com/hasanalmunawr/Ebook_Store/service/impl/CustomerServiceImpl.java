@@ -2,7 +2,7 @@ package com.hasanalmunawr.Ebook_Store.service.impl;
 
 import com.hasanalmunawr.Ebook_Store.book.EbookEntity;
 import com.hasanalmunawr.Ebook_Store.book.EbookRepository;
-import com.hasanalmunawr.Ebook_Store.dto.response.SearchResponse;
+import com.hasanalmunawr.Ebook_Store.dto.response.EbookResponse;
 import com.hasanalmunawr.Ebook_Store.service.CustomerService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final EbookRepository ebookRepository;
 
     @Override
-    public List<SearchResponse> FilterEbookByPriceRange(double min, double max) {
+    public List<EbookResponse> FilterEbookByPriceRange(double min, double max) {
         List<EbookEntity> ebooks = ebookRepository.findByPriceRange(min, max);
         if (ebooks.isEmpty()) {
             throw new EntityNotFoundException("No ebook found");
@@ -28,7 +28,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<SearchResponse> FilterEbookByPriceCheaper() {
+    public List<EbookResponse> FilterEbookByPriceCheaper() {
         List<EbookEntity> ebooks = ebookRepository.filterEbookByPriceCheaper();
         if (ebooks.isEmpty()) {
             throw new EntityNotFoundException("No ebook found");
@@ -37,7 +37,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<SearchResponse> FilterEbookByPriceExpensive() {
+    public List<EbookResponse> FilterEbookByPriceExpensive() {
         List<EbookEntity> ebooks = ebookRepository.filterEbookByPriceExpensive();
         if (ebooks.isEmpty()) {
             throw new EntityNotFoundException("No ebook found");
@@ -46,7 +46,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<SearchResponse>  FilterEbookByTitle(String title) {
+    public List<EbookResponse>  FilterEbookByTitle(String title) {
         List<EbookEntity> ebooks = ebookRepository.filterEbookByTitle(title);
         if (ebooks.isEmpty()) {
             throw new EntityNotFoundException("No ebook found");
@@ -55,7 +55,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<SearchResponse>  FilterEbookByAuthor(String author) {
+    public List<EbookResponse>  FilterEbookByAuthor(String author) {
         List<EbookEntity> ebooks = ebookRepository.filterEbookByAuthor(author);
         if (ebooks.isEmpty()) {
             throw new EntityNotFoundException("No ebook found");
@@ -63,10 +63,10 @@ public class CustomerServiceImpl implements CustomerService {
         return convertEntityToDto(ebooks);
     }
 
-    private List<SearchResponse> convertEntityToDto(List<EbookEntity> ebooks) {
+    private List<EbookResponse> convertEntityToDto(List<EbookEntity> ebooks) {
         return ebooks.stream()
                 .map(ebook -> {
-                    SearchResponse searchResponse = new SearchResponse();
+                    EbookResponse searchResponse = new EbookResponse();
 
                     searchResponse.setTitle(ebook.getTitle());
                     searchResponse.setIsbn(ebook.getIsbn());

@@ -1,15 +1,19 @@
 package com.hasanalmunawr.Ebook_Store.service;
 
 import com.hasanalmunawr.Ebook_Store.dto.EbookRequest;
-import com.hasanalmunawr.Ebook_Store.dto.response.SearchResponse;
+import com.hasanalmunawr.Ebook_Store.dto.UpdateEbookRequest;
+import com.hasanalmunawr.Ebook_Store.dto.response.EbookResponse;
 import com.hasanalmunawr.Ebook_Store.user.UserEntity;
-import org.springframework.security.core.Authentication;
 
 public interface EbookService {
 
     void saveEbookInformation(EbookRequest request, UserEntity currentUser);
 
-    SearchResponse getEbookInformation(String isbn);
+    EbookResponse getEbookInformation(String isbn);
+
+    EbookResponse updateEbookInformation(UpdateEbookRequest request, String isbn, UserEntity currentUser);
+
+    void deleteEbook(String isbn);
 
 
 }

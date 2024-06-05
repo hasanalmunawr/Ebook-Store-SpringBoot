@@ -1,6 +1,7 @@
 package com.hasanalmunawr.Ebook_Store.book;
 
 
+import com.hasanalmunawr.Ebook_Store.transaction.TransactionEntity;
 import com.hasanalmunawr.Ebook_Store.user.Auditable;
 import com.hasanalmunawr.Ebook_Store.user.UserEntity;
 import com.hasanalmunawr.Ebook_Store.wishlist.WishListEntity;
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -63,4 +65,7 @@ public class EbookEntity extends Auditable implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wish_list_id", referencedColumnName = "id")
     private WishListEntity wishList;
+
+    @ManyToMany(mappedBy = "ebooks")
+    private List<TransactionEntity> transactions;
 }

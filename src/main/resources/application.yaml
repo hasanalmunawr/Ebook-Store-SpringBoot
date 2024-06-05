@@ -38,6 +38,11 @@ logging:
       springframework:
         security: trace
 
+paypal:
+  client-id: CLIENT-ID
+  client-secret: CLIENT-SECRET
+  mode: sandbox
+
 #spring:
 #  profiles:
 #    active: dev

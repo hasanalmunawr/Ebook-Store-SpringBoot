@@ -1,12 +1,14 @@
 package com.hasanalmunawr.Ebook_Store.controller;
 
 import com.hasanalmunawr.Ebook_Store.dto.EbookRequest;
+import com.hasanalmunawr.Ebook_Store.dto.UpdateEbookRequest;
 import com.hasanalmunawr.Ebook_Store.security.AdminSecurity;
 import com.hasanalmunawr.Ebook_Store.service.AdminService;
 import com.hasanalmunawr.Ebook_Store.service.EbookService;
 import com.hasanalmunawr.Ebook_Store.service.FileService;
 import com.hasanalmunawr.Ebook_Store.user.UserEntity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -15,8 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-
-// IT MUST BE ABLE TO ACCESS BY ADMIN ONLY!!!!
 
 @RestController
 @RequestMapping("/api/v1/admin")
@@ -33,13 +33,15 @@ public class AdminController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getProfile(
             @AuthenticationPrincipal UserEntity currentAdmin
-            ) {
+    ) {
         validateAdminAccess(currentAdmin);
-//        UserEntity admin = (UserEntity) currentAdmin.getPrincipal();
         return ResponseEntity.ok(adminService.profile(currentAdmin));
     }
 
-    @PostMapping("/uploadInfo")
+    @PostMapping(
+            path = "/uploadInfo",
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public void ebookInformation(
             @RequestBody EbookRequest request,
             @AuthenticationPrincipal UserEntity currentAdmin
@@ -49,26 +51,25 @@ public class AdminController {
     }
 
     @PostMapping("/upload/file")
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public void handleFileUpload(
             @RequestParam("file") MultipartFile file,
             @RequestParam("isbn") String isbn,
-            @RequestParam("fileName") String fileName,
             @AuthenticationPrincipal UserEntity admin
     ) throws IOException {
         validateAdminAccess(admin);
         if (file.isEmpty()) {
             throw new IOException();
         }
-        byte[] fileBytes = file.getBytes();
 
-        fileService.saveEbookFile(file, fileName,isbn);
+        fileService.saveEbookFile(file, isbn);
     }
 
     @PostMapping(path = "/upload/cover")
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public void uploadCover(
             @RequestParam("file") MultipartFile file,
             @RequestParam("isbn") String isbn,
-            @RequestParam("fileName") String fileName,
             @AuthenticationPrincipal UserEntity admin
     ) throws IOException {
         validateAdminAccess(admin);
@@ -76,29 +77,30 @@ public class AdminController {
         if (file.isEmpty()) {
             throw new IOException();
         }
-        byte[] fileBytes = file.getBytes();
 
-        fileService.saveCoverFile(file, fileName,isbn);
+        fileService.saveCoverFile(file, isbn);
     }
 
-    @PutMapping("/put")
+    @PutMapping(
+            value = "/update-ebook/{isbn}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> put(
-            @AuthenticationPrincipal UserEntity currentAdmin
-    ) {
-        if (!AdminSecurity.isAdmin(currentAdmin)) {
-            throw new AccessDeniedException("You do not have permission to access this resource");
-        }
-        return ResponseEntity.ok("Hello From PUT admin");
+            @RequestBody UpdateEbookRequest request,
+            @PathVariable String isbn,
+            @AuthenticationPrincipal UserEntity currentAdmin) {
+        validateAdminAccess(currentAdmin);
+        return ResponseEntity.accepted().body(ebookService.updateEbookInformation(request, isbn, currentAdmin));
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<?> delete(
+    @DeleteMapping("/delete/{isbn}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void delete(
+            @PathVariable String isbn,
             @AuthenticationPrincipal UserEntity currentAdmin
     ) {
-        if (!AdminSecurity.isAdmin(currentAdmin)) {
-            throw new AccessDeniedException("You do not have permission to access this resource");
-        }
-        return ResponseEntity.ok("Hello From DELETE admin");
+        validateAdminAccess(currentAdmin);
+        ebookService.deleteEbook(isbn);
     }
 
 

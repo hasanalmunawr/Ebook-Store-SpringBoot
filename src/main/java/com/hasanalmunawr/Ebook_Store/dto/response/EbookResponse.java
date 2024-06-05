@@ -1,10 +1,5 @@
 package com.hasanalmunawr.Ebook_Store.dto.response;
 
-import com.hasanalmunawr.Ebook_Store.user.UserEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +11,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SearchResponse {
+public class EbookResponse {
 
     private String title;
     private String isbn;

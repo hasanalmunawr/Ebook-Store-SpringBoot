@@ -1,19 +1,18 @@
 package com.hasanalmunawr.Ebook_Store.service;
 
-import com.hasanalmunawr.Ebook_Store.book.EbookEntity;
-import com.hasanalmunawr.Ebook_Store.dto.response.SearchResponse;
+import com.hasanalmunawr.Ebook_Store.dto.response.EbookResponse;
 
 import java.util.List;
 
 public interface CustomerService {
 
-    List<SearchResponse> FilterEbookByPriceRange(double min, double max);
+    List<EbookResponse> FilterEbookByPriceRange(double min, double max);
 
-    List<SearchResponse> FilterEbookByPriceCheaper();
+    List<EbookResponse> FilterEbookByPriceCheaper();
 
-    List<SearchResponse> FilterEbookByPriceExpensive();
+    List<EbookResponse> FilterEbookByPriceExpensive();
 
-    List<SearchResponse> FilterEbookByTitle(String title);
+    List<EbookResponse> FilterEbookByTitle(String title);
 
-    List<SearchResponse> FilterEbookByAuthor(String author);
+    List<EbookResponse> FilterEbookByAuthor(String author);
 }
