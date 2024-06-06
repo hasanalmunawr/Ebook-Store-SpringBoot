@@ -38,10 +38,6 @@ public class ApplicationConfig {
         return authProvider;
     }
 
-    public JavaMailSender javaMailSender() {
-
-    }
-
     @Bean
     public AuditorAware<Integer> auditorAware() {
         return new ApplicationAuditAware();
