@@ -12,4 +12,4 @@ Bookstore is a simple RESTful API Java Spring Boot application to store and sell
 <li>SpringDoc</li>
 </ul>
 
-[To See the flow of program](https://drive.google.com/file/d/1eDNLZZEfY_KHY1k-81F65CmvEaR2JgH-/view)
+[To See the flowchart of program](https://drive.google.com/file/d/1eDNLZZEfY_KHY1k-81F65CmvEaR2JgH-/view)
