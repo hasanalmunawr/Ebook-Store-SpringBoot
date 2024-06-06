@@ -20,6 +20,7 @@ public class CodeEntity extends Auditable {
     private Integer tokenCode;
     private LocalDateTime expiresAt;
     private LocalDateTime validatedAt;
+    private String type;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

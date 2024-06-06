@@ -1,5 +1,6 @@
-package com.hasanalmunawr.Ebook_Store.paymentGateway;
+package com.hasanalmunawr.Ebook_Store.controller;
 
+import com.hasanalmunawr.Ebook_Store.paymentGateway.PaypalService;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class PaypalController {
         return "index";
     }
 
-    @PostMapping("/create")
+    @PostMapping("/pay")
     public RedirectView createPayment() {
         try {
             String cancelUrl = "test";

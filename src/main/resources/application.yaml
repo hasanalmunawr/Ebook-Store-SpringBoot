@@ -10,19 +10,23 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: false
-
-#  minio:
-#    url: https://play.min.io
-#    bucket: 00000qweqwe
-#    access-key: Q3AM3UQ867SPQQA43P2F
-#    secret-key: zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
   servlet:
     multipart:
       enabled: true
       file-size-threshold: 2KB
       max-file-size: 5MB
       max-request-size: 10MB
-
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: <email>
+    password: <password>
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 application:
   security:
@@ -39,8 +43,8 @@ logging:
         security: trace
 
 paypal:
-  client-id: CLIENT-ID
-  client-secret: CLIENT-SECRET
+  client-id: <CLIENT-ID>
+  client-secret: <CLIENT-SECRET>
   mode: sandbox
 
 #spring:

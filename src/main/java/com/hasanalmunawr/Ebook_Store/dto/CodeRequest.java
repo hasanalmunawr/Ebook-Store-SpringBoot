@@ -6,7 +6,8 @@ import lombok.NonNull;
 public record CodeRequest(
         @NonNull
         @NotBlank
-        Integer code
+        Integer code,
+        String newPassword
 ) {
 
 }

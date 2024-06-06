@@ -4,7 +4,10 @@ import com.hasanalmunawr.Ebook_Store.code.CodeEntity;
 import com.hasanalmunawr.Ebook_Store.code.CodeRepository;
 import com.hasanalmunawr.Ebook_Store.dto.LoginRequest;
 import com.hasanalmunawr.Ebook_Store.dto.RegisterRequest;
+import com.hasanalmunawr.Ebook_Store.dto.ResetPasswordRequest;
 import com.hasanalmunawr.Ebook_Store.dto.response.LoginResponse;
+import com.hasanalmunawr.Ebook_Store.email.EmailService;
+import com.hasanalmunawr.Ebook_Store.email.EmailTemplateName;
 import com.hasanalmunawr.Ebook_Store.exception.CodeInvalidException;
 import com.hasanalmunawr.Ebook_Store.exception.UserAlreadyExistException;
 import com.hasanalmunawr.Ebook_Store.security.JwtService;
@@ -15,6 +18,7 @@ import com.hasanalmunawr.Ebook_Store.token.TokenType;
 import com.hasanalmunawr.Ebook_Store.user.Role;
 import com.hasanalmunawr.Ebook_Store.user.UserEntity;
 import com.hasanalmunawr.Ebook_Store.user.UserRepository;
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +32,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.security.auth.login.AccountNotFoundException;
 import java.security.SecureRandom;
-import java.time.LocalDateTime;
 
+import static com.hasanalmunawr.Ebook_Store.email.EmailTemplateName.*;
+import static com.hasanalmunawr.Ebook_Store.utils.EmailUtils.ACTIVATION_ACCOUNT;
 import static java.time.LocalDateTime.now;
 
 @Service
@@ -40,19 +45,19 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
     private final CodeRepository codeRepository;
-//    private final EmailService emailService;
+    private final EmailService emailService;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
 
     @Override
-    public Integer register(RegisterRequest request) {
+    public void register(RegisterRequest request) {
         log.info("Register request: {}", request);
         try {
             var userEmail = userRepository.findByEmail(request.getEmail());
             if (userEmail.isPresent()) {
-                throw new UserAlreadyExistException("User With "+request.getEmail()+" Already Exist");
+                throw new UserAlreadyExistException("User With " + request.getEmail() + " Already Exist");
             }
 
             UserEntity user = UserEntity.builder()
@@ -69,13 +74,9 @@ public class AuthServiceImpl implements AuthService {
                     .build();
 
             UserEntity savedUser = userRepository.save(user);
-            sendValidationEmail(savedUser);
-//
-//            return RegisterResponse.builder()
-//                    .accountInfo(convertUserToACI(user))
-//                    .build();
+            sendValidationEmail(savedUser, ACTIVATE_ACCOUNT);
 
-            return generateAndSaveActivationCode(savedUser);
+//            return generateAndSaveActivationCode(savedUser, ACTIVATION_ACCOUNT);
 
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -116,7 +117,7 @@ public class AuthServiceImpl implements AuthService {
         CodeEntity codeEntity = codeRepository.findByTokenCode(code)
                 .orElseThrow(CodeInvalidException::new);
         codeEntity.setValidatedAt(now());
-log.info("AuthService: Activate account with code: {}", codeEntity);
+        log.info("AuthService: Activate account with code: {}", codeEntity);
         if (now().isAfter(codeEntity.getExpiresAt())) {
             throw new CodeInvalidException("Activation token has expired");
         }
@@ -126,6 +127,80 @@ log.info("AuthService: Activate account with code: {}", codeEntity);
         log.info("AuthService: Code has Activated : {}", code);
         userEntity.setEnabled(true);
         userRepository.save(userEntity);
+    }
+
+    @Override
+    public void forgotPassword(String email) throws MessagingException {
+        var user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
+
+        sendValidationEmail(user, RESET_PASSWORD); // Include create a code and send the message email
+    }
+
+    @Override
+    @Transactional
+    public void validatePasswordCode(Integer tokenCode, String newPassword) {
+        CodeEntity codeEntity = codeRepository.findByTokenCode(tokenCode)
+                .orElseThrow(CodeInvalidException::new);
+        codeEntity.setValidatedAt(now());
+
+        if (now().isAfter(codeEntity.getExpiresAt())) {
+            throw new CodeInvalidException("Activation token has expired");
+        }
+        try {
+            var userEntity = userRepository.findById(codeEntity.getUser().getId())
+                    .orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
+
+            userEntity.setPassword(newPassword);
+            userRepository.save(userEntity);
+        } catch (UsernameNotFoundException e) {
+            throw new UsernameNotFoundException("User Not Found");
+        }
+    }
+
+
+    @Override
+    public void updatePassword(UserEntity currentUser) throws MessagingException {
+        sendValidationEmail(currentUser, UPDATE_PASSWORD);
+    }
+
+    @Transactional
+    @Override
+    public void changePassword(
+            UserEntity currentUser,
+            Integer code,
+            ResetPasswordRequest request) throws MessagingException {
+        if (!passwordEncoder.matches(currentUser.getPassword(), request.oldPassword())) {
+            throw new IllegalAccessError("Password does not match");
+        }
+
+        try {
+            CodeEntity codeEntity = codeRepository.findByTokenCode(code)
+                    .orElseThrow(CodeInvalidException::new);
+            codeEntity.setValidatedAt(now());
+
+            if (now().isAfter(codeEntity.getExpiresAt())) {
+                throw new CodeInvalidException("Activation token has expired");
+            }
+
+            currentUser.setPassword(passwordEncoder.encode(request.newPassword()));
+            userRepository.save(currentUser);
+        } catch (Exception e) {
+            throw new UsernameNotFoundException("Password Not Found");
+        }
+
+    }
+
+
+    private boolean isCodeValid(Integer tokenCode) {
+        CodeEntity codeEntity = codeRepository.findByTokenCode(tokenCode)
+                .orElseThrow(CodeInvalidException::new);
+        codeEntity.setValidatedAt(now());
+
+        if (now().isAfter(codeEntity.getExpiresAt())) {
+            throw new CodeInvalidException("Activation token has expired");
+        }
+        return true;
     }
 
     private Role convertStrToRole(String role) {
@@ -150,24 +225,25 @@ log.info("AuthService: Activate account with code: {}", codeEntity);
         tokenRepository.save(token);
     }
 
-    private void sendValidationEmail(UserEntity user)  {
-        var newToken = generateAndSaveActivationCode(user);
+    private void sendValidationEmail(UserEntity user, EmailTemplateName templateName) throws MessagingException {
+        var newToken = generateAndSaveActivationCode(user, templateName.getName());
 
-//        emailService.sendEmailAcctivateAccount(
-//                user.getEmail(),
-//                user.getFullName(),
-//                EmailTemplateName.ACTIVATE_ACCOUNT,
-//                newToken,
-//                ACTIVATION_ACCOUNT
-//        );
+        emailService.sendEmailActivateAccount(
+                user.getEmail(),
+                user.getFullName(),
+                templateName,
+                String.valueOf(newToken),
+                templateName.getName()
+        );
     }
 
-    private Integer generateAndSaveActivationCode(UserEntity user) {
+    private Integer generateAndSaveActivationCode(UserEntity user, String type) {
         Integer generatedCode = generateActivationCode();
 
         CodeEntity token = CodeEntity.builder()
                 .tokenCode(generatedCode)
                 .expiresAt(now().plusMinutes(10))
+                .type(type)
                 .user(user)
                 .build();
         codeRepository.save(token);

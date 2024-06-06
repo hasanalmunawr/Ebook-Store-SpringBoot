@@ -67,4 +67,8 @@ public class UserEntity extends Auditable implements UserDetails {
     public String getUsername() {
         return this.email;
     }
+
+    public String getFullName() {
+        return this.firstName + " " + this.lastName;
+    }
 }

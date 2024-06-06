@@ -31,7 +31,7 @@ public class FileController {
     }
 
     @GetMapping(path = "/cover")
-     public ResponseEntity<?> getCoverFile(
+    public ResponseEntity<?> getCoverFile(
             @RequestParam("isbn") String isbn,
             @AuthenticationPrincipal UserEntity user
     ) {
