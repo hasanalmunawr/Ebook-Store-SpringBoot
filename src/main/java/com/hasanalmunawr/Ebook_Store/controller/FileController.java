@@ -9,7 +9,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 
-import static org.springframework.http.MediaType.APPLICATION_PDF;
 
 @RestController
 @RequestMapping("/api/v1/file")
@@ -23,10 +22,9 @@ public class FileController {
             @RequestParam("isbn") String isbn,
             @AuthenticationPrincipal UserEntity user
     ) {
-        byte[] ebookFile = fileService.getEbookFile(isbn);
+        String ebookFile = String.valueOf(fileService.getEbookFile(isbn));
 
         return ResponseEntity.ok()
-//                .contentType(APPLICATION_PDF)
                 .body(ebookFile);
     }
 
@@ -35,10 +33,9 @@ public class FileController {
             @RequestParam("isbn") String isbn,
             @AuthenticationPrincipal UserEntity user
     ) {
-        byte[] ebookFile = fileService.getCoverFile(isbn);
+         String ebookFile = String.valueOf(fileService.getCoverFile(isbn));
 
         return ResponseEntity.ok()
-//                .contentType(MediaType.IMAGE_JPEG)
                 .body(ebookFile);
     }
 

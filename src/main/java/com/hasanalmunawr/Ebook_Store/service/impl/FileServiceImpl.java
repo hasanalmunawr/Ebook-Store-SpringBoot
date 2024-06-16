@@ -1,6 +1,7 @@
 package com.hasanalmunawr.Ebook_Store.service.impl;
 
 import com.hasanalmunawr.Ebook_Store.book.EbookRepository;
+import com.hasanalmunawr.Ebook_Store.dto.response.FileResponse;
 import com.hasanalmunawr.Ebook_Store.service.FileService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -45,13 +46,9 @@ public class FileServiceImpl implements FileService {
         Path pathSave = Path.of("src/main/resources/images/" + randomName);
 
         try {
-//         // Ensure the directory exists
             Files.createDirectories(pathSave.getParent());
-
-            // Save the file (FOUND ERROR AT HERE
             file.transferTo(pathSave);
 
-            // Update the entity with the path
             ebookEntity.setCoverEbook(pathSave.toString());
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -60,7 +57,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public byte[] getCoverFile(String isbn) {
+    public FileResponse getCoverFile(String isbn) {
         var ebookEntity = ebookRepository.findByIsbn(isbn)
                 .orElseThrow(() -> new EntityNotFoundException("Ebook Not found"));
 
@@ -69,14 +66,17 @@ public class FileServiceImpl implements FileService {
             InputStream inputStream = new FileInputStream(pathCover.toFile());
             byte[] bytes = inputStream.readAllBytes();
             inputStream.close();
-            return bytes;
+
+            return FileResponse.builder()
+                    .pathFile(pathCover.toString())
+                    .build();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public byte[] getEbookFile(String isbn) {
+    public FileResponse getEbookFile(String isbn) {
         var ebookEntity = ebookRepository.findByIsbn(isbn)
                 .orElseThrow(() -> new EntityNotFoundException("Ebook Not found"));
 
@@ -85,7 +85,10 @@ public class FileServiceImpl implements FileService {
             InputStream inputStream = new FileInputStream(pathCover.toFile());
             byte[] bytes = inputStream.readAllBytes();
             inputStream.close();
-            return bytes;
+
+            return FileResponse.builder()
+                    .pathFile(pathCover.toString())
+                    .build();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

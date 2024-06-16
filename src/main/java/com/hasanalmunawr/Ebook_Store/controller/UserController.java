@@ -6,15 +6,14 @@ import com.hasanalmunawr.Ebook_Store.dto.response.EbookResponse;
 import com.hasanalmunawr.Ebook_Store.service.AuthService;
 import com.hasanalmunawr.Ebook_Store.service.CustomerService;
 import com.hasanalmunawr.Ebook_Store.user.UserEntity;
-import com.hasanalmunawr.Ebook_Store.user.UserRepository;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -44,45 +43,100 @@ public class UserController {
         authService.changePassword(currentUser, code, request);
     }
 
+    @GetMapping(path = "/{isbn}")
+    public ResponseEntity<EbookResponse> getEbook(
+            @PathVariable String isbn,
+            @AuthenticationPrincipal UserEntity currentUser
+    ) {
+        return ResponseEntity.ok(customerService.searchEbookByIsbn(isbn));
+    }
+
 
     @GetMapping(path = "/filterByPrice")
-    public ResponseEntity<List<EbookResponse>> FilterEbookByPriceRange(
+    public ResponseEntity<Page<EbookResponse>> FilterEbookByPriceRange(
             @RequestParam("min") double min,
             @RequestParam("max") double max,
+            @RequestParam("page") int page,
+            @RequestParam("size") int size,
             @AuthenticationPrincipal UserEntity user
     ) {
-        return ResponseEntity.ok(customerService.FilterEbookByPriceRange(min, max));
+        return ResponseEntity.ok(customerService.FilterEbookByPriceRange(min, max, page, size));
     }
 
     @GetMapping(path = "/filterByTitle")
-    public ResponseEntity<List<EbookResponse>> FilterEbookByTitle(
+    public ResponseEntity<Page<EbookResponse>> FilterEbookByTitle(
             @RequestParam("title") String title,
+            @RequestParam("page") int page,
+            @RequestParam("size") int size,
             @AuthenticationPrincipal UserEntity user
     ) {
-        return ResponseEntity.ok(customerService.FilterEbookByTitle(title));
+        return ResponseEntity.ok(customerService.FilterEbookByTitle(title, page, size));
     }
 
     @GetMapping(path = "/filterByAuthor")
-    public ResponseEntity<List<EbookResponse>> FilterEbookByAuthor(
+    public ResponseEntity<Page<EbookResponse>> FilterEbookByAuthor(
             @RequestParam("author") String author,
+            @RequestParam("page") int page,
+            @RequestParam("size") int size,
             @AuthenticationPrincipal UserEntity user
     ) {
-        return ResponseEntity.ok(customerService.FilterEbookByAuthor(author));
+        return ResponseEntity.ok(customerService.FilterEbookByAuthor(author, page, size));
     }
 
+    @Cacheable(value = "booksAsc",  key = "#page + '-' + #size")
     @GetMapping(path = "/filterByPriceAsc")
-    public ResponseEntity<List<EbookResponse>> FilterEbookByPriceCheaper(
+    public ResponseEntity<Page<EbookResponse>> FilterEbookByPriceCheaper(
+            @RequestParam("page") int page,
+            @RequestParam("size") int size,
             @AuthenticationPrincipal UserEntity user
     ) {
-        return ResponseEntity.ok(customerService.FilterEbookByPriceCheaper());
+        return ResponseEntity.ok(customerService.FilterEbookByPriceCheaper(page, size));
     }
 
+    @Cacheable(value = "bookDsc")
     @GetMapping(path = "/filterByPriceDsc")
-    public ResponseEntity<List<EbookResponse>> FilterEbookByPriceExpensive(
+    public ResponseEntity<Page<EbookResponse>> FilterEbookByPriceExpensive(
+            @RequestParam("page") int page,
+            @RequestParam("size") int size,
             @AuthenticationPrincipal UserEntity user
     ) {
-        return ResponseEntity.ok(customerService.FilterEbookByPriceExpensive());
+        return ResponseEntity.ok(customerService.FilterEbookByPriceExpensive(page, size));
     }
+
+    @GetMapping(path = "/filterByPublisher")
+    public ResponseEntity<Page<EbookResponse>> FilterEbookByPublisher(
+            @RequestParam("publisher") String publisher,
+            @RequestParam("page") int page,
+            @RequestParam("size") int size,
+            @AuthenticationPrincipal UserEntity user
+    ) {
+        return ResponseEntity.ok(customerService.FilterEbookByPublisher(publisher, page, size));
+    }
+
+    @GetMapping(path = "/filterBook")
+    public ResponseEntity<Page<EbookResponse>> getCurrentUser(
+            @RequestParam("min") double min,
+            @RequestParam("max") double max,
+            @RequestParam("sort") String sort,
+            @RequestParam("page") int page,
+            @RequestParam("size") int size,
+            @AuthenticationPrincipal UserEntity user
+    ) {
+        return ResponseEntity.ok(customerService.filterBook(min, max, sort, page, size));
+    }
+
+    @GetMapping(path = "/filterBook2")
+    public ResponseEntity<Page<EbookResponse>> filterBooks(
+            @RequestParam("min") double min,
+            @RequestParam("max") double max,
+            @RequestParam("sort") String sort,
+            @RequestParam("page") int page,
+            @RequestParam("size") int size,
+            @AuthenticationPrincipal UserEntity user
+    ) {
+        return ResponseEntity.ok(customerService.filterBook(min, max, sort, page, size));
+    }
+
 
     @GetMapping(path = "/get-message")
     public ResponseEntity<?> post() {

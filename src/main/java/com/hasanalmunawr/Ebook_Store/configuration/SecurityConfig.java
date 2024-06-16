@@ -52,13 +52,6 @@ public class SecurityConfig{
             "/swagger-ui.html"
     };
 
-    private static final String[] SECURITY_URLS = {
-            "/api/v1/auth/**",
-            "/api/v1/admin/**",
-    };
-
-
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http

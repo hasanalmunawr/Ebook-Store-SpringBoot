@@ -18,19 +18,18 @@ This repository just for learning
 1. **Clone the repository**:
     ```sh
     git clone https://github.com/hasanalmunawr/Ebook-Store-SpringBoot.git
-    cd Spring-Security-Oauth2
     ```
-
-2. **Configure application properties**:
-   Update the `application.properties` file with your OAuth2 provider credentials.
-
-3. **Run the application**:
+2. **Run the application**:
     ```sh
     ./mvnw spring-boot:run
     ```
+3. **Open The API Specification**
+    ```sh
+   http://localhost:8080/swagger-ui/index.html#/
+   ```
 
 4. **Access the application**:
-   Open your browser and navigate to `http://localhost:8080` to see the OAuth2 login options.
+   Open your browser and navigate to `http://localhost:8080` to see 
 
 ## Technology
 
@@ -41,4 +40,5 @@ This repository just for learning
 - Jwt
 - Java Mail Sender
 - Paypal 
+- Spring Docs
 
