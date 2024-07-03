@@ -1,14 +1,14 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/ebook_store
+    url: jdbc:postgresql://localhost:5433/ebook_store
     username: postgres
-    password: badiro12
+    password: postgres
     driver-class-name: org.postgresql.Driver
     dbcp2:
       default-auto-commit: false
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     open-in-view: false
   servlet:
     multipart:
@@ -19,8 +19,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: hasanalmunawar01@gmail.com
-    password: vhpmeizmdpvpiclz
+    username: <username>
+    password: <password>
     properties:
       mail:
         smtp:
