@@ -1,0 +1,28 @@
+name: Build & Deploy Ebook Store as exercise
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-deploy:
+    name: Build & Deploy Spring app
+    runs-on: ubuntu-22.04
+    steps:
+      - name:  Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-jdk@v4
+        with:
+          distribution: 'corretto'
+          java-version: 17
+
+      - name: Unit Test
+        run: mvn -B test --file pom.xml
+
+      - name: Build the application
+        run: |
+          mvn clean
+          mvn -B package --file pom.xml
